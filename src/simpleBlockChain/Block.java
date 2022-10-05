@@ -4,21 +4,33 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 
 public class Block {
 
 	
 	private int index;
-	private String data;
+	private TransactionList data;
+	private String rootHash;
 	private String timestamp;
 	private String previousHash;
 	private String hash;
 	private int nunce;
 	private String difficulty; 
 	
-	public Block(int index,String data, String previousHash) throws NoSuchAlgorithmException {
+	public Block(int index, String previousHash) throws NoSuchAlgorithmException {
+		System.out.println("chamando metodo normal de criar block");
+		this.index = index;
+		this.data = new TransactionList();
+		this.difficulty = "0000";
+		this.timestamp = LocalDateTime.now().toString();
+		this.previousHash = previousHash;
+		this.nunce = 0;
+		this.hash= this.calculateHash(difficulty);
+		this.rootHash = "";
+	}
+	public Block(int index, String previousHash, TransactionList data) throws NoSuchAlgorithmException {
+		System.out.println("chamando metodo genesis de criar block");
 		this.index = index;
 		this.data = data;
 		this.difficulty = "0000";
@@ -26,6 +38,7 @@ public class Block {
 		this.previousHash = previousHash;
 		this.nunce = 0;
 		this.hash= this.calculateHash(difficulty);
+		this.rootHash = data.calculateRootHash();
 	}
 	
 	public String calculateHash() throws NoSuchAlgorithmException{
@@ -56,6 +69,17 @@ public class Block {
 		return hashMined;
 	}
 
+	public void printData() {
+		data.printTransactionList();
+	}
+	
+public void addToBlockTransactionList(String from,String to, double value) throws NoSuchAlgorithmException {
+		data.addTransaction(from, to, value);
+	}
+	
+	public int getBlockDataSize() {
+		return data.getTransactionListSize();
+	}
 	public int getIndex() {
 		return index;
 	}
@@ -64,11 +88,11 @@ public class Block {
 		this.index = index;
 	}
 
-	public String getData() {
+	public TransactionList getData() {
 		return data;
 	}
 
-	public void setData(String data) {
+	public void setData(TransactionList data) {
 		this.data = data;
 	}
 
@@ -114,5 +138,15 @@ public class Block {
 	public void setNunce(int nunce) {
 		this.nunce = nunce;
 	}
+
+	public String getRoot() {
+		return rootHash;
+	}
+
+	public void setRoot(String rootHash) {
+		this.rootHash = rootHash;
+	}
+	
+	
 	
 }
